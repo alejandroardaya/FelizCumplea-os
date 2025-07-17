@@ -20,19 +20,27 @@ boton.addEventListener('click', () => {
 
 function playMelody() {
   const notes = [
-    { freq: 440, dur: 1.4 },      // A4
-    { freq: 493.88, dur: 1.4 },   // B4
-    { freq: 523.25, dur: 2.4 },   // C5
-    { freq: 440, dur: 1.2 }, 
-    { freq: 523.25, dur: 1.2 }, 
-    { freq: 587.33, dur: 2.2 },   // D5
-    { freq: 659.25, dur: 1.4 },   // E5
-    { freq: 587.33, dur: 1.4 }, 
-    { freq: 523.25, dur: 2.4 },
-    { freq: 493.88, dur: 1.6 },
-    { freq: 440, dur: 2.4 },
-    { freq: 392.00, dur: 2.4 },   // G4
-    { freq: 440.00, dur: 3.0 }
+    { freq: 261.63, dur: 1.125 },  // DO4
+    { freq: 246.94, dur: 0.375 },  // SI3
+    { freq: 220.00, dur: 0.75 },   // LA3
+    { freq: 196.00, dur: 0.75 },   // SOL3
+    { freq: 329.63, dur: 0.75 },   // MI4
+    { freq: 261.63, dur: 1.125 },  // DO4
+    { freq: 246.94, dur: 1.5 },    // SI3
+
+    { freq: 220.00, dur: 0.75 },   // LA3
+    { freq: 196.00, dur: 0.75 },   // SOL3
+    { freq: 329.63, dur: 0.75 },   // MI4
+    { freq: 261.63, dur: 0.75 },   // DO4
+    { freq: 246.94, dur: 0.75 },   // SI3
+    { freq: 220.00, dur: 1.125 },  // LA3
+
+    { freq: 196.00, dur: 0.75 },   // SOL3
+    { freq: 329.63, dur: 0.75 },   // MI4
+    { freq: 196.00, dur: 0.75 },   // SOL3
+    { freq: 261.63, dur: 0.75 },   // DO4
+    { freq: 246.94, dur: 0.75 },   // SI3
+    { freq: 220.00, dur: 1.125 }   // LA3
   ];
 
   let time = context.currentTime;
@@ -40,19 +48,19 @@ function playMelody() {
     const osc = context.createOscillator();
     const gain = context.createGain();
 
+    osc.type = 'sawtooth'; // timbre similar a trompeta
+    osc.frequency.setValueAtTime(note.freq, time);
+
     osc.connect(gain);
     gain.connect(context.destination);
 
-    osc.frequency.setValueAtTime(note.freq, time);
-    osc.type = 'sawtooth'; // simula trompeta
-
     gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(0.15, time + 0.1); // fade in
+    gain.gain.linearRampToValueAtTime(0.2, time + 0.05); // fade in
     gain.gain.linearRampToValueAtTime(0, time + note.dur); // fade out
 
     osc.start(time);
-    osc.stop(time + note.dur + 0.2);
+    osc.stop(time + note.dur + 0.1);
 
-    time += note.dur + 0.2;
+    time += note.dur + 0.1; // leve pausa entre notas
   });
 }
