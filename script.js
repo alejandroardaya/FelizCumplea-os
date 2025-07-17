@@ -77,7 +77,7 @@
     const boton = document.getElementById('play');
 
     const notesLaVieEnRose = [
-      ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["G#4", "4n."], 
+      ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["G#4", "4n."],
       ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "4n"],
       ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "8n"], ["A4", "8n"], ["B4", "8n"], ["G#4", "8n"],
       ["E5", "8n"], ["F#5", "8n"], ["G#5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "4n"],
@@ -88,23 +88,25 @@
     ];
 
     const synth = new Tone.Synth({
-      oscillator: { type: 'sawtooth' }, // timbre más trompeta
+      oscillator: { type: 'sine' },
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
     }).toDestination();
 
+    const speedFactor = 1.5;
+
     boton.addEventListener('click', async () => {
-      // Primero, abre la tapa y muestra mensaje
-      tapa.style.transform = 'rotateX(-90deg)';
-      mensaje.classList.add('visible');
       boton.disabled = true;
 
-      // Espera que Tone.js esté listo para reproducir
       await Tone.start();
+
+      tapa.style.transform = 'rotateX(-90deg)';
+      mensaje.classList.add('visible');
 
       let now = Tone.now();
       notesLaVieEnRose.forEach(([note, duration]) => {
-        synth.triggerAttackRelease(note, duration, now);
-        now += Tone.Time(duration).toSeconds();
+        const durSeconds = Tone.Time(duration).toSeconds() * speedFactor;
+        synth.triggerAttackRelease(note, durSeconds, now);
+        now += durSeconds;
       });
     });
   </script>
