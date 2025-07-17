@@ -20,10 +20,20 @@ boton.addEventListener('click', () => {
 
 function playMelody() {
   const notes = [
-    { freq: 392, dur: 0.5 }, { freq: 440, dur: 0.5 }, { freq: 494, dur: 0.6 }, { freq: 523, dur: 0.6 },
-    { freq: 587, dur: 0.6 }, { freq: 659, dur: 0.6 },
-    { freq: 698, dur: 0.4 }, { freq: 659, dur: 0.4 }, { freq: 587, dur: 0.5 }, { freq: 523, dur: 0.6 },
-    { freq: 494, dur: 0.5 }, { freq: 440, dur: 1.0 }
+    // Intro de La Vie en Rose (Louis Armstrong)
+    { freq: 440, dur: 0.7 },  // A4
+    { freq: 493.88, dur: 0.7 }, // B4
+    { freq: 523.25, dur: 1.2 }, // C5
+    { freq: 440, dur: 0.6 }, 
+    { freq: 523.25, dur: 0.6 }, 
+    { freq: 587.33, dur: 1.1 }, // D5
+    { freq: 659.25, dur: 0.7 }, // E5
+    { freq: 587.33, dur: 0.7 }, 
+    { freq: 523.25, dur: 1.2 },
+    { freq: 493.88, dur: 0.8 },
+    { freq: 440, dur: 1.2 },
+    { freq: 392.00, dur: 1.2 }, // G4
+    { freq: 440.00, dur: 1.5 }
   ];
 
   let time = context.currentTime;
@@ -34,13 +44,16 @@ function playMelody() {
     osc.connect(gain);
     gain.connect(context.destination);
 
-    osc.frequency.value = note.freq;
-    osc.type = 'sine';
+    osc.frequency.setValueAtTime(note.freq, time);
+    osc.type = 'sawtooth'; // simula timbre de trompeta
 
-    gain.gain.setValueAtTime(0.2, time);
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.2, time + 0.05); // fade in
+    gain.gain.linearRampToValueAtTime(0, time + note.dur); // fade out
+
     osc.start(time);
-    osc.stop(time + note.dur);
+    osc.stop(time + note.dur + 0.1);
 
-    time += note.dur + 0.05;
+    time += note.dur + 0.1;
   });
 }
