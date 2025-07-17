@@ -79,50 +79,33 @@
     const notesLaVieEnRose = [
       ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["G#4", "4n."], 
       ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "4n"],
-
       ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "8n"], ["A4", "8n"], ["B4", "8n"], ["G#4", "8n"],
       ["E5", "8n"], ["F#5", "8n"], ["G#5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "4n"],
-
       ["D5", "8n"], ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["C#5", "8n"], ["A4", "4n"],
       ["F#4", "4n"], ["F#4", "4n"], ["F#4", "4n"], ["F#4", "4n"],
-
       ["G#4", "8n"], ["A4", "8n"], ["B4", "8n"], ["C#5", "8n"], ["B4", "8n"], ["G#4", "8n"], ["E5", "8n"], ["D5", "8n"],
       ["C#5", "8n"], ["B4", "8n"], ["G#4", "4n"], ["A4", "4n"], ["B4", "2n"]
     ];
 
-    const estrofas = [
-      notesLaVieEnRose.slice(0, 14),
-      notesLaVieEnRose.slice(14, 28),
-      notesLaVieEnRose.slice(28, 40),
-      notesLaVieEnRose.slice(40)
-    ];
-
     const synth = new Tone.Synth({
-      oscillator: { type: 'sine' },
+      oscillator: { type: 'sawtooth' }, // timbre más trompeta
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
     }).toDestination();
 
-    const speedFactor = 1.5; // hace la melodía 50% más lenta
-
     boton.addEventListener('click', async () => {
+      // Primero, abre la tapa y muestra mensaje
       tapa.style.transform = 'rotateX(-90deg)';
       mensaje.classList.add('visible');
       boton.disabled = true;
 
+      // Espera que Tone.js esté listo para reproducir
       await Tone.start();
 
       let now = Tone.now();
-
-      for (let i = 0; i < estrofas.length; i++) {
-        estrofas[i].forEach(([note, duration]) => {
-          const durSeconds = Tone.Time(duration).toSeconds() * speedFactor;
-          synth.triggerAttackRelease(note, durSeconds, now);
-          now += durSeconds;
-        });
-        if (i < estrofas.length - 1) {
-          now += 1 * speedFactor; // silencio entre estrofas escalado
-        }
-      }
+      notesLaVieEnRose.forEach(([note, duration]) => {
+        synth.triggerAttackRelease(note, duration, now);
+        now += Tone.Time(duration).toSeconds();
+      });
     });
   </script>
 </body>
