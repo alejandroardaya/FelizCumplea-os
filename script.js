@@ -1,66 +1,112 @@
-const tapa = document.querySelector('.tapa');
-const mensaje = document.getElementById('mensaje');
-const boton = document.getElementById('play');
-
-const context = new (window.AudioContext || window.webkitAudioContext)();
-
-boton.addEventListener('click', () => {
-  tapa.style.transform = 'rotateX(-90deg)';
-  mensaje.classList.remove('oculto');
-  mensaje.classList.add('visible');
-
-  if (context.state === 'suspended') {
-    context.resume().then(playMelody);
-  } else {
-    playMelody();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cajita Musical La Vie en Rose</title>
+<style>
+  body {
+    background: #fcefdc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    margin: 0;
   }
+  .cajita {
+    position: relative;
+    width: 320px;
+  }
+  .tapa {
+    position: absolute;
+    top: 0;
+    width: 320px;
+    height: 80px;
+    background: #a0522d;
+    border-radius: 12px 12px 0 0;
+    transform-origin: top center;
+    transition: transform 1.2s ease-out;
+    z-index: 2;
+  }
+  .base {
+    margin-top: 80px;
+    width: 320px;
+    height: 250px;
+    background: #cd853f;
+    border-radius: 0 0 12px 12px;
+    padding: 20px;
+    text-align: center;
+    color: #4b2e0c;
+    position: relative;
+    z-index: 1;
+  }
+  #mensaje {
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 1.5s ease-in;
+    margin-top: 30px;
+  }
+  #mensaje.visible {
+    opacity: 1;
+  }
+  #play {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="cajita">
+    <div class="tapa"></div>
+    <div class="base">
+      <p id="mensaje">Feliz cumple Chule de mi corazón, Dios te bendiga mucho.</p>
+      <button id="play">🎵 Abrir caja</button>
+    </div>
+  </div>
 
-  boton.disabled = true;
-});
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
+  <script>
+    const tapa = document.querySelector('.tapa');
+    const mensaje = document.getElementById('mensaje');
+    const boton = document.getElementById('play');
 
-function playMelody() {
-  const notes = [
-    { freq: 261.63, dur: 0.5625 },  // DO4
-    { freq: 246.94, dur: 0.1875 },  // SI3
-    { freq: 220.00, dur: 0.375 },   // LA3
-    { freq: 196.00, dur: 0.375 },   // SOL3
-    { freq: 329.63, dur: 0.375 },   // MI4
-    { freq: 261.63, dur: 0.5625 },  // DO4
-    { freq: 246.94, dur: 0.75 },    // SI3
+    const notesLaVieEnRose = [
+      ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["G#4", "4n."], 
+      ["B4", "8n"], ["C#5", "8n"], ["D5", "8n"], ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "4n"],
+      ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "8n"], ["A4", "8n"], ["B4", "8n"], ["G#4", "8n"],
+      ["E5", "8n"], ["F#5", "8n"], ["G#5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["C#5", "4n"],
+      ["D5", "8n"], ["E5", "8n"], ["F#5", "8n"], ["E5", "8n"], ["D5", "8n"], ["B4", "8n"], ["C#5", "8n"], ["A4", "4n"],
+      ["F#4", "4n"], ["F#4", "4n"], ["F#4", "4n"], ["F#4", "4n"],
+      ["G#4", "8n"], ["A4", "8n"], ["B4", "8n"], ["C#5", "8n"], ["B4", "8n"], ["G#4", "8n"], ["E5", "8n"], ["D5", "8n"],
+      ["C#5", "8n"], ["B4", "8n"], ["G#4", "4n"], ["A4", "4n"], ["B4", "2n"]
+    ];
 
-    { freq: 220.00, dur: 0.375 },   // LA3
-    { freq: 196.00, dur: 0.375 },   // SOL3
-    { freq: 329.63, dur: 0.375 },   // MI4
-    { freq: 261.63, dur: 0.375 },   // DO4
-    { freq: 246.94, dur: 0.375 },   // SI3
-    { freq: 220.00, dur: 0.5625 },  // LA3
+    const synth = new Tone.Synth({
+      oscillator: { type: 'sawtooth' }, // timbre más trompeta
+      envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
+    }).toDestination();
 
-    { freq: 196.00, dur: 0.375 },   // SOL3
-    { freq: 329.63, dur: 0.375 },   // MI4
-    { freq: 196.00, dur: 0.375 },   // SOL3
-    { freq: 261.63, dur: 0.375 },   // DO4
-    { freq: 246.94, dur: 0.375 },   // SI3
-    { freq: 220.00, dur: 0.5625 }   // LA3
-  ];
+    boton.addEventListener('click', async () => {
+      // Primero, abre la tapa y muestra mensaje
+      tapa.style.transform = 'rotateX(-90deg)';
+      mensaje.classList.add('visible');
+      boton.disabled = true;
 
-  let time = context.currentTime;
-  notes.forEach(note => {
-    const osc = context.createOscillator();
-    const gain = context.createGain();
+      // Espera que Tone.js esté listo para reproducir
+      await Tone.start();
 
-    osc.type = 'sawtooth'; // trompeta
-    osc.frequency.setValueAtTime(note.freq, time);
-
-    osc.connect(gain);
-    gain.connect(context.destination);
-
-    gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(0.2, time + 0.02); // entrada más rápida
-    gain.gain.linearRampToValueAtTime(0, time + note.dur); // fade out
-
-    osc.start(time);
-    osc.stop(time + note.dur);
-
-    time += note.dur; // sin pausa
-  });
-}
+      let now = Tone.now();
+      notesLaVieEnRose.forEach(([note, duration]) => {
+        synth.triggerAttackRelease(note, duration, now);
+        now += Tone.Time(duration).toSeconds();
+      });
+    });
+  </script>
+</body>
+</html>
