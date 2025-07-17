@@ -2,7 +2,6 @@ const tapa = document.querySelector('.tapa');
 const mensaje = document.getElementById('mensaje');
 const boton = document.getElementById('play');
 
-// Crear el contexto de audio global
 const context = new (window.AudioContext || window.webkitAudioContext)();
 
 boton.addEventListener('click', () => {
@@ -10,7 +9,6 @@ boton.addEventListener('click', () => {
   mensaje.classList.remove('oculto');
   mensaje.classList.add('visible');
 
-  // Reanudar el contexto de audio antes de reproducir
   if (context.state === 'suspended') {
     context.resume().then(playMelody);
   } else {
@@ -22,14 +20,10 @@ boton.addEventListener('click', () => {
 
 function playMelody() {
   const notes = [
-    { freq: 264, dur: 0.3 }, { freq: 264, dur: 0.3 }, { freq: 297, dur: 0.6 }, { freq: 264, dur: 0.6 },
-    { freq: 352, dur: 0.6 }, { freq: 330, dur: 1.2 },
-    { freq: 264, dur: 0.3 }, { freq: 264, dur: 0.3 }, { freq: 297, dur: 0.6 }, { freq: 264, dur: 0.6 },
-    { freq: 396, dur: 0.6 }, { freq: 352, dur: 1.2 },
-    { freq: 264, dur: 0.3 }, { freq: 264, dur: 0.3 }, { freq: 528, dur: 0.6 }, { freq: 440, dur: 0.6 },
-    { freq: 352, dur: 0.6 }, { freq: 330, dur: 0.6 }, { freq: 297, dur: 1.2 },
-    { freq: 466, dur: 0.3 }, { freq: 466, dur: 0.3 }, { freq: 440, dur: 0.6 }, { freq: 352, dur: 0.6 },
-    { freq: 396, dur: 0.6 }, { freq: 352, dur: 1.2 }
+    { freq: 392, dur: 0.5 }, { freq: 440, dur: 0.5 }, { freq: 494, dur: 0.6 }, { freq: 523, dur: 0.6 },
+    { freq: 587, dur: 0.6 }, { freq: 659, dur: 0.6 },
+    { freq: 698, dur: 0.4 }, { freq: 659, dur: 0.4 }, { freq: 587, dur: 0.5 }, { freq: 523, dur: 0.6 },
+    { freq: 494, dur: 0.5 }, { freq: 440, dur: 1.0 }
   ];
 
   let time = context.currentTime;
