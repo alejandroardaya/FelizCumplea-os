@@ -90,7 +90,6 @@
       ["C#5", "8n"], ["B4", "8n"], ["G#4", "4n"], ["A4", "4n"], ["B4", "2n"]
     ];
 
-    // Separar en 4 estrofas:
     const estrofas = [
       notesLaVieEnRose.slice(0, 14),
       notesLaVieEnRose.slice(14, 28),
@@ -99,9 +98,11 @@
     ];
 
     const synth = new Tone.Synth({
-      oscillator: { type: 'sine' }, // sonido más suave
+      oscillator: { type: 'sine' },
       envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
     }).toDestination();
+
+    const speedFactor = 1.5; // hace la melodía 50% más lenta
 
     boton.addEventListener('click', async () => {
       tapa.style.transform = 'rotateX(-90deg)';
@@ -114,12 +115,12 @@
 
       for (let i = 0; i < estrofas.length; i++) {
         estrofas[i].forEach(([note, duration]) => {
-          synth.triggerAttackRelease(note, duration, now);
-          now += Tone.Time(duration).toSeconds();
+          const durSeconds = Tone.Time(duration).toSeconds() * speedFactor;
+          synth.triggerAttackRelease(note, durSeconds, now);
+          now += durSeconds;
         });
-        // Agregar 1 segundo de silencio después de cada estrofa, excepto la última
-        if (i < estrofas.length -1) {
-          now += 1;
+        if (i < estrofas.length - 1) {
+          now += 1 * speedFactor; // silencio entre estrofas escalado
         }
       }
     });
